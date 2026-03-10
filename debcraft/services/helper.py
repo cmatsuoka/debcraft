@@ -99,6 +99,7 @@ class PackagingHelpersRunner:
         self._lifecycle = lifecycle
         self._temp_dir = tempfile.TemporaryDirectory()
         self._helpers = PackagingHelpers()
+        self.control_fields: dict[str, str | list | set] = {}
 
     def __enter__(self) -> Self:
         return self
@@ -155,6 +156,7 @@ class PackagingHelpersRunner:
             helper_run = getattr(helper, "run", None)
             if callable(helper_run):
                 helper_run(**common_kwargs)
+                self.control_fields.update(helper.control_fields)
             else:
                 raise RuntimeError(f"Helper '{helper_name}' is not runnable")  # noqa: TRY004
 

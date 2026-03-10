@@ -19,6 +19,7 @@
 import pathlib
 from typing import Any
 
+import pydantic
 from craft_cli import emit
 
 from debcraft import control, errors, models
@@ -38,6 +39,7 @@ class Gencontrol(Helper):
         prime_dir: pathlib.Path,
         control_dir: pathlib.Path,
         state_dir: pathlib.Path,
+        extra_fields: dict[str, str] | None = None,
         **kwargs: Any,  # noqa: ARG002
     ) -> None:
         """Create the control file containing package metadata.
@@ -50,6 +52,8 @@ class Gencontrol(Helper):
         """
         package = project.get_package(package_name)
         installed_size = _get_dir_size(prime_dir)
+
+        extra_fields = extra_fields or {}
 
         # To be moved to model validation after we stabilize contents.
         version = package.version or project.version
@@ -73,8 +77,19 @@ class Gencontrol(Helper):
         shlibdeps = _read_shlibdeps(state_dir)
         depends = _filter_dependencies(shlibdeps, package.depends)
 
+        aliased_extra_fields: dict[str, Any] = {
+            name.replace("-", "_"): (str, pydantic.Field(default=value, alias=name))
+            for name, value in extra_fields.items()
+        }
+
+        binary_control_model = pydantic.create_model(
+            "BinaryPackageControl",
+            __base__=models.DebianBinaryPackageControl,
+            **aliased_extra_fields,
+        )
+
         # Change to use package data from the project model
-        ctl_data = models.DebianBinaryPackageControl(
+        ctl_data = binary_control_model(
             package=package_name,
             source=project.name,
             version=version,

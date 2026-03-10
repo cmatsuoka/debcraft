@@ -48,5 +48,8 @@ class Encoder:
                 case list():
                     line = ", ".join(map(str, value))  # pyright: ignore[reportUnknownVariableType,reportUnknownArgumentType]
                     self._file.write(f"{key}: {line}\n")
+                case set():
+                    line = ", ".join(map(str, sorted(value)))  # pyright: ignore[reportUnknownVariableType,reportUnknownArgumentType]
+                    self._file.write(f"{key}: {line}\n")
                 case _:
                     self._file.write(f"{key}: {value}\n")

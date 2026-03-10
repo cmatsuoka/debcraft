@@ -16,6 +16,7 @@
 
 """Debcraft helpers."""
 
+from .cargo import Cargo
 from .gencontrol import Gencontrol
 from .helpers import HelperGroup
 from .makedeb import Makedeb
@@ -36,6 +37,7 @@ class PackagingHelpers(HelperGroup):
     """Helpers used during package creation."""
 
     def _register(self) -> None:
+        self._register_helper("cargo", Cargo)
         self._register_helper("md5sums", Md5sums)
         self._register_helper("makeshlibs", Makeshlibs)
         self._register_helper("shlibdeps", Shlibdeps)

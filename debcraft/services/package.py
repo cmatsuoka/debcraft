@@ -44,10 +44,11 @@ class Package(services.PackageService):
         debs: list[pathlib.Path] = []
 
         with helper_service.packaging_helpers() as helper:
+            helper.run("cargo")
             helper.run("md5sums")
             helper.run("makeshlibs")
             helper.run("shlibdeps")
-            helper.run("gencontrol")
+            helper.run("gencontrol", extra_fields=helper.control_fields)
             helper.run("makedeb", output_dir=dest, deb_list=debs)
 
         return debs

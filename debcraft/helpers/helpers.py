@@ -22,6 +22,8 @@ from abc import ABC, abstractmethod
 class Helper:
     """Debcraft helper base class."""
 
+    control_fields: dict[str, str | list | set] = {}
+
 
 class HelperGroup(ABC):
     """A collection of Debcraft helpers."""

@@ -18,6 +18,7 @@
 
 import enum
 import re
+from functools import cached_property
 from typing import Annotated
 
 import pydantic
@@ -127,6 +128,20 @@ class Project(models.Project):
             raise errors.DebcraftError(f"package {name} is not defined")
 
         return package
+
+    @cached_property
+    def build_packages(self) -> set[str]:
+        """Obtain the list of build packages specified in the project.
+
+        :return: A sorted list of packages from all parts.
+        """
+        pkg_set: set[str] = set()
+        for part in self.parts.values():
+            for pkg in part.get("build-packages", []):
+                name, _, _ = pkg.partition(" ")
+                pkg_set.add(name)
+
+        return pkg_set
 
 
 class PackagesProject(models.CraftBaseModel, extra="ignore"):

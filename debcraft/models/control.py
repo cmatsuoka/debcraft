@@ -46,8 +46,8 @@ class DebianBinaryPackageControl(models.CraftBaseModel):
     recommends: list[str] | None = None
     conflicts: list[str] | None = None
     breaks: list[str] | None = None
-    replaces: list[str] | None = None
     provides: list[str] | None = None
+    replaces: list[str] | None = None
     section: str | None = None
     priority: str | None = None
     description: str
